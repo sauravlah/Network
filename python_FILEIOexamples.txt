@@ -1,0 +1,78 @@
+PYTHON PATTERN MATCHING/FILE SEARCH SCRIPTS:
+
+READ FROM inFile.txt and write it into two files in parallel:
+
+with open("inFile.txt", 'r') as fr:
+    with open("outFile1.txt", 'w') as fw1:
+        with open("outFile2.txt", 'w') as fw2:
+            for line in fr.readlines():
+                fw1.writelines(line)
+                fw2.writelines(line)
+				
+There is a file (query.txt) which has some keywords/phrases which are to be matched with other files using grep. The last three lines of the following code are working perfectly but when the same command is used inside the while loop it goes into an infinite loop or something(ie doesn't respond).
+
+SOLUTION1:
+
+import os
+import subprocess
+with open('query.txt', 'r') as f:
+    for line in f:
+        line = line.rstrip() # remove trailing whitespace such as '\n'
+        subprocess.call(['/bin/grep', line, 'my2.txt'])
+
+=======================================================
+SOLUTION 2:
+
+
+down vote
+Your code scans the whole my2.txt file for each query in query.txt.
+
+You want to:
+
+read all queries into a list
+iterate once over all lines of the text file and check each file against all queries.
+Try this code:
+
+with open('query.txt','r') as f:
+    queries = [l.strip() for l in f]
+
+with open('my2.txt','r') as f:
+    for line in f:
+        for query in queries:
+            if query in line:
+                print query, line
+		
+=======================================================
+from __future__ import with_statement
+import subprocess
+
+def grep_lines(filename, query_filename):
+    with open(query_filename, "rb") as myfile:
+        for line in myfile:
+             subprocess.call(["/bin/grep", line.strip(), filename])
+
+grep_lines("my2.txt", "query.txt")		
+===================================================================================
+I'd like to remove the first column from a file. The file contains 3 columns separated by space and the columns has the following titles: X', 'Displacement' and 'Force'
+SOL1:
+
+f = open("datafile.txt", "r")
+g = open("datafile_fixed.txt", "w")
+
+for line in f:
+    if line.strip():
+        g.write("\t".join(line.split()[1:]) + "\n")
+
+f.close()
+g.close()
+
+SOL2:
+with open("datafile.txt", "r") as fin:
+    with open("outputfile.txt", "w") as fout:
+        for line in fin:
+            line = line.split(' ')
+            if len(line) == 3:
+                del line[0]
+                fout.write(line[0] + ' ' + line[1])
+            else:
+                fout.write('\n')

@@ -1,0 +1,134 @@
+Working with files and directories in Python
+
+11 File and Directory Access
+os.path module:
+exists - checks if a path or file exists
+Example:
+import os.path
+print os.path.exists("c:/Windows")
+Results:
+True
+isfile and isdir - test if the path is a file or directory, respectively.
+Example:
+import os.path
+print os.path.isfile("c:/Windows")
+print os.path.isdir("c:/Windows")
+Results:
+False
+True
+getmtime - returns the modification time of a path
+Example:
+import os.path
+import time
+mtime = os.path.getmtime("c:/Windows")
+print time.gmtime(mtime)
+Results:
+(2008, 4, 2, 15, 58, 39, 2, 93, 0)
+glob module:
+glob: returns a list of paths matching a Unix-style glob pattern.
+Example:
+import glob
+print glob.glob("c:/windows/*.bmp")
+=======================================================================================================
+LIST THE CONTENTS OF A DIRECTORY ON A FILESYSTEM:
+
+OPTION 1 - os.listdir()
+This is probably the simplest way to list the contents of a directory in Python.
+
+import os
+dirlist = os.listdir("/usr")
+
+from pprint import pprint
+pprint(dirlist)
+Results:
+
+['lib',
+ 'shareFeisty',
+ 'src',
+ 'bin',
+ 'local',
+ 'X11R6',
+ 'lib64',
+ 'sbin',
+ 'share',
+ 'include',
+ 'lib32',
+ 'man',
+ 'games']
+OPTION 2 - glob.glob()
+This method allows you to use shell-style wildcards.
+
+import glob
+dirlist = glob.glob('/usr/*')
+
+from pprint import pprint
+pprint(dirlist)
+Results:
+
+['/usr/lib',
+ '/usr/shareFeisty',
+ '/usr/src',
+ '/usr/bin',
+ '/usr/local',
+ '/usr/X11R6',
+ '/usr/lib64',
+ '/usr/sbin',
+ '/usr/share',
+ '/usr/include',
+ '/usr/lib32',
+ '/usr/man',
+ '/usr/games']
+OPTION 3 - Unix "ls" command using subprocess
+This method uses your operating system's "ls" command. It allows you to sort the output based on modification time, file size, etc. by passing these command-line options to the "ls" command. The following example lists the 10 most recently modified files in /var/log:
+
+from subprocess import Popen, PIPE
+
+def listdir_shell(path, *lsargs):
+    p = Popen(('ls', path) + lsargs, shell=False, stdout=PIPE, close_fds=True)
+    return [path.rstrip('\n') for path in p.stdout.readlines()]
+
+dirlist = listdir_shell('/var/log', '-t')[:10]
+
+from pprint import pprint
+pprint(dirlist)
+Results:
+
+['auth.log',
+ 'syslog',
+ 'dpkg.log',
+ 'messages',
+ 'user.log',
+ 'daemon.log',
+ 'debug',
+ 'kern.log',
+ 'munin',
+ 'mysql.log']
+OPTION 4 - Unix "find" style using os.walk
+This method allows you to list directory contents recursively in a manner similar to the Unix "find" command. It uses Python's os.walk.
+
+import os
+
+def unix_find(pathin):
+    """Return results similar to the Unix find command run without options
+    i.e. traverse a directory tree and return all the file paths
+    """
+    return [os.path.join(path, file)
+            for (path, dirs, files) in os.walk(pathin)
+            for file in files]
+
+pathlist = unix_find('/etc')[-10:]
+
+from pprint import pprint
+pprint(pathlist)
+Results:
+
+['/etc/fonts/conf.avail/20-lohit-gujarati.conf',
+ '/etc/fonts/conf.avail/69-language-selector-zh-mo.conf',
+ '/etc/fonts/conf.avail/11-lcd-filter-lcddefault.conf',
+ '/etc/cron.weekly/0anacron',
+ '/etc/cron.weekly/cvs',
+ '/etc/cron.weekly/popularity-contest',
+ '/etc/cron.weekly/man-db',
+ '/etc/cron.weekly/apt-xapian-index',
+ '/etc/cron.weekly/sysklogd',
+ '/etc/cron.weekly/.placeholder']

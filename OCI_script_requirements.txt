@@ -1,0 +1,18 @@
+We need to get all our .tf files into the same format. So we need a script (python or bash) that does the following
+REQUIREMENT1:
+
+All protocol lines should be in the format "${var.<protocol>}" where <protocol>  is the variable name
+All ports in tcp_options or udp_options should be the port numbers not the variable names.
+All source and destinations should conform to the following rules:
+Subnets inside the tenancy should use their variable cider name*
+Summarised addresses of subnets inside the tenancy should use cidr notation
+Addresses outside the tenancy should use cidr notation
+*We still need to look at how to automatically create the cross-region variable names.
+
+REQUIREMENT2:
+
+1. FIND UNUSED SECLIST
+REQUIREMENT3:
+2. FIND FUPLICATE SECLISTS
+REQUIREMENT4:
+3. Find ip address within a subnet range
